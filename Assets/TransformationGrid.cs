@@ -10,6 +10,9 @@ public class TransformationGrid : MonoBehaviour {
     // list bc we're getting this every update and avoid makign a new array each time
     List<Transformation> transformations;
 
+    // matrix containing all the transformation operations weve been doing so far
+    Matrix4x4 transformation;
+
 
     void Awake()
     {
@@ -35,7 +38,7 @@ public class TransformationGrid : MonoBehaviour {
     void Update()
     {
         // getting component each update to be able to edit and test in play mode
-        GetComponents<Transformation>(transformations);
+        UpdateTransformation();
 
         for (int i = 0, z = 0; z < gridResolution; z++)
         {
@@ -78,11 +81,21 @@ public class TransformationGrid : MonoBehaviour {
 
     // getting original coordinates and apply each transformation
     // dont rely on actual position of points to avoid accumulating transformations each frame
-    Vector3 TransformPoint (int x, int y, int z) {
-		Vector3 coordinates = GetCoordinates(x, y, z);
-		for (int i = 0; i < transformations.Count; i++) {
-			coordinates = transformations[i].Apply(coordinates);
+    Vector3 TransformPoint(int x, int y, int z)
+    {
+        Vector3 coordinates = GetCoordinates(x, y, z);
+        return transformation.MultiplyPoint(coordinates);
+    }
+    
+    // base it on the transform matrix we've defined in the other scripts so far 
+    void UpdateTransformation () {
+        GetComponents<Transformation>(transformations);
+        
+		if (transformations.Count > 0) { // go over and apply it to the points
+			transformation = transformations[0].Matrix;
+			for (int i = 1; i < transformations.Count; i++) {
+                transformation = transformations[i].Matrix * transformation;
+			}
 		}
-		return coordinates;
 	}
 }

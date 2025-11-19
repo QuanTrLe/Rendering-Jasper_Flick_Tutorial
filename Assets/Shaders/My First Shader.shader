@@ -26,7 +26,7 @@ Shader "Custom/My First Shader" {
                 float4 MyFragmentProgram (
                     float4 position: SV_POSITION // input var to read from specific semantic
                 ): SV_TARGET {
-                    return 0;
+                    return float4(1, 0.5, 1, 1);
                 }
 
             ENDCG

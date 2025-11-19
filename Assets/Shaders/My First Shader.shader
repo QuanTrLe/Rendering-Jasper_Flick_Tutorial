@@ -1,3 +1,5 @@
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
 Shader "Custom/My First Shader" {
     SubShader {
         Pass {
@@ -14,8 +16,8 @@ Shader "Custom/My First Shader" {
 
 
                 // indicating what we're outputing (System Val Position) 
-                float4 MyVertexProgram (): SV_POSITION {
-                    return 0;
+                float4 MyVertexProgram (float4 position: POSITION): SV_POSITION {
+                    return UnityObjectToClipPos(position); // this is the vertex position * UNITY_MATRIX_MVP;
                 }
 
 

@@ -39,7 +39,7 @@ Shader "Custom/My First Shader" {
                 // output rgba color val for one pixel
                 // SV_TARGET is default shader target, indicating where final color is written to
                 float4 MyFragmentProgram (Interpolators i): SV_TARGET {
-                    return float4(i.localPosition, 1);
+                    return float4(i.localPosition + 0.5, 1) * _Tint;
                 }
 
             ENDCG

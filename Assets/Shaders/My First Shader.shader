@@ -24,14 +24,19 @@ Shader "Custom/My First Shader" {
 
                 struct Interpolators {
                     float4 position: SV_POSITION;
-                    float3 localPosition: TEXCOORD0;
+                    float2 uv: TEXCOORD0;
+                };
+
+                struct VertexData {
+                    float4 position: POSITION;
+                    float2 uv: TEXCOORD0;
                 };
 
                 // indicating what we're outputing (System Val Position) 
-                Interpolators MyVertexProgram (float4 position: POSITION){
+                Interpolators MyVertexProgram (VertexData v){
                     Interpolators i;
-                    i.localPosition = position.xyz;
-                    i.position = UnityObjectToClipPos(position); // this is the vertex's position * UNITY_MATRIX_MVP;
+                    i.position = UnityObjectToClipPos(v.position); // this is the vertex's position * UNITY_MATRIX_MVP;
+                    i.uv = v.uv;
                     return i;
                 }
 
@@ -39,7 +44,7 @@ Shader "Custom/My First Shader" {
                 // output rgba color val for one pixel
                 // SV_TARGET is default shader target, indicating where final color is written to
                 float4 MyFragmentProgram (Interpolators i): SV_TARGET {
-                    return float4(i.localPosition + 0.5, 1) * _Tint;
+                    return float4(i.uv, 1, 1);
                 }
 
             ENDCG

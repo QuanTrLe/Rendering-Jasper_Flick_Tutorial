@@ -5,6 +5,7 @@
 Shader "Custom/My First Shader" {
     Properties {
         _Tint ("Tint", Color) = (1, 1, 1, 1)
+        _MainTex ("Texture", 2D) = "white" {}
     }
 
     SubShader {
@@ -21,6 +22,8 @@ Shader "Custom/My First Shader" {
                 #include "UnityCG.cginc"
 
                 float4 _Tint;
+                sampler2D _MainTex;
+                float4 _MainTex_ST;
 
                 struct Interpolators {
                     float4 position: SV_POSITION;
@@ -36,7 +39,7 @@ Shader "Custom/My First Shader" {
                 Interpolators MyVertexProgram (VertexData v){
                     Interpolators i;
                     i.position = UnityObjectToClipPos(v.position); // this is the vertex's position * UNITY_MATRIX_MVP;
-                    i.uv = v.uv;
+                    i.uv = TRANSFORM_TEX(v.uv, _MainTex); // uv coordinates applied after material tilling and offset
                     return i;
                 }
 
@@ -44,7 +47,7 @@ Shader "Custom/My First Shader" {
                 // output rgba color val for one pixel
                 // SV_TARGET is default shader target, indicating where final color is written to
                 float4 MyFragmentProgram (Interpolators i): SV_TARGET {
-                    return float4(i.uv, 1, 1);
+                    return tex2D(_MainTex, i.uv) * _Tint; // given a texture sample and uv coord return color
                 }
 
             ENDCG

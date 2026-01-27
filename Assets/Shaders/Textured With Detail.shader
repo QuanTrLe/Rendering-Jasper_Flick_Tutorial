@@ -52,7 +52,7 @@ Shader "Custom/Textured With Detail" {
                 float4 MyFragmentProgram (Interpolators i): SV_TARGET {
                     // given a texture sample and uv coord return color
                     float4 fragmentColor = tex2D(_MainTex, i.uv) * _Tint;
-                    fragmentColor *= tex2D(_DetailTex, i.uv * 10) * 2;
+                    fragmentColor *= tex2D(_DetailTex, i.uvDetail) * 2;
                     return fragmentColor;
                 }
 

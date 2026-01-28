@@ -51,6 +51,7 @@ Shader "Custom/My First Lighting Shader" {
                 // output rgba color val for one pixel
                 // SV_TARGET is default shader target, indicating where final color is written to
                 float4 MyFragmentProgram (Interpolators i): SV_TARGET {
+                    i.normal = normalize(i.normal);
                     return float4(i.normal * 0.5 + 0.5, 1); // given a texture sample and uv coord return color
                 }
 

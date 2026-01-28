@@ -42,8 +42,11 @@ Shader "Custom/My First Lighting Shader" {
                     Interpolators i;
                     i.position = UnityObjectToClipPos(v.position); // this is the vertex's position * UNITY_MATRIX_MVP;
                     i.uv = TRANSFORM_TEX(v.uv, _MainTex); // uv coordinates applied after material tilling and offset
-                    // can also do i.normal = mul((float3x3)unity_ObjectToWorld, v.normal);
-                    i.normal = mul(unity_ObjectToWorld, float4(v.normal, 0)); // from object to world space
+                    // can also do i.normal = mul(unity_ObjectToWorld, float4(v.normal, 0));
+                    i.normal = mul( // from object to world space
+                        transpose((float3x3)unity_WorldToObject), 
+                        float4(v.normal, 0)
+                    );
                     i.normal = normalize(i.normal);
                     return i;
                 }

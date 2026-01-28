@@ -1,0 +1,59 @@
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
+Shader "Custom/My First Lighting Shader" {
+    Properties {
+        _Tint ("Tint", Color) = (1, 1, 1, 1)
+        _MainTex ("Texture", 2D) = "white" {}
+    }
+
+    SubShader {
+        Pass {
+            CGPROGRAM
+
+                // set what is our vertex and fragment program
+                // pragma is basically for issuing special compiler directives
+                #pragma vertex MyVertexProgram
+			    #pragma fragment MyFragmentProgram
+
+                // the boilerplate code: common vars, funcs, and other things
+                // also make it so you dont have to worry about platform specific stuffs
+                #include "UnityCG.cginc"
+
+                float4 _Tint;
+                sampler2D _MainTex;
+                float4 _MainTex_ST;
+
+                struct Interpolators {
+                    float4 position: SV_POSITION;
+                    float2 uv: TEXCOORD0;
+                    float3 normal: NORMAL;
+                };
+
+                struct VertexData {
+                    float4 position: POSITION;
+                    float3 normal: NORMAL;
+                    float2 uv: TEXCOORD0;
+                };
+
+                // indicating what we're outputing (System Val Position) 
+                Interpolators MyVertexProgram (VertexData v){
+                    Interpolators i;
+                    i.position = UnityObjectToClipPos(v.position); // this is the vertex's position * UNITY_MATRIX_MVP;
+                    i.uv = TRANSFORM_TEX(v.uv, _MainTex); // uv coordinates applied after material tilling and offset
+                    i.normal = v.normal;
+                    return i;
+                }
+
+
+                // output rgba color val for one pixel
+                // SV_TARGET is default shader target, indicating where final color is written to
+                float4 MyFragmentProgram (Interpolators i): SV_TARGET {
+                    return float4(i.normal * 0.5 + 0.5, 1); // given a texture sample and uv coord return color
+                }
+
+            ENDCG
+        }
+    }
+}

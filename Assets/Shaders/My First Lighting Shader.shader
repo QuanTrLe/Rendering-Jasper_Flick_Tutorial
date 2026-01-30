@@ -76,7 +76,7 @@ Shader "Custom/My First Lighting Shader" {
                         DotClamped(halfVector, i.normal),
                         _Smoothness * 100
                     );
-                    return float4(specular, 1); // specular with color 
+                    return float4(diffuse + specular, 1); // specular with color 
                 }
 
             ENDCG

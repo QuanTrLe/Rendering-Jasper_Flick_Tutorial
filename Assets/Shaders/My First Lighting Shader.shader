@@ -11,6 +11,7 @@ Shader "Custom/My First Lighting Shader" {
     SubShader {
         Pass {
             Tags {
+                // forward base is the first pass used when rendering something via forward rendering path
 				"LightMode" = "ForwardBase"
 			}
 
@@ -57,7 +58,9 @@ Shader "Custom/My First Lighting Shader" {
                 float4 MyFragmentProgram (Interpolators i): SV_TARGET {
                     i.normal = normalize(i.normal);
                     float3 lightDir = _WorldSpaceLightPos0.xyz;
-                    return DotClamped(lightDir, i.normal); // liught from above test to see how it looks like 
+                    float3 lightColor = _LightColor0.rgb;
+                    float3 diffuse = lightColor * DotClamped(lightDir, i.normal); 
+                    return float4(diffuse, 1); // liught from above test to see how it looks like 
                 }
 
             ENDCG

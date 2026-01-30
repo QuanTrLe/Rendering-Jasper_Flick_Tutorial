@@ -33,7 +33,8 @@ Shader "Custom/My First Lighting Shader" {
                 struct Interpolators {
                     float4 position: SV_POSITION;
                     float2 uv: TEXCOORD0;
-                    float3 normal: NORMAL;
+                    float3 normal: TEXCOORD1;
+                    float3 worldPos: TEXCOORD2;
                 };
 
                 struct VertexData {
@@ -46,6 +47,7 @@ Shader "Custom/My First Lighting Shader" {
                 Interpolators MyVertexProgram (VertexData v){
                     Interpolators i;
                     i.position = UnityObjectToClipPos(v.position); // this is the vertex's position * UNITY_MATRIX_MVP;
+                    i.worldPos = mul(unity_ObjectToWorld, v.position);
                     i.uv = TRANSFORM_TEX(v.uv, _MainTex); // uv coordinates applied after material tilling and offset
                     // can also do i.normal = mul(transpose((float3x3)unity_WorldToObject), float4(v.normal, 0));
                     i.normal = UnityObjectToWorldNormal(v.normal);
@@ -58,11 +60,15 @@ Shader "Custom/My First Lighting Shader" {
                 float4 MyFragmentProgram (Interpolators i): SV_TARGET {
                     i.normal = normalize(i.normal);
                     float3 lightDir = _WorldSpaceLightPos0.xyz;
+                    float3 viewDir = normalize(_WorldSpaceCameraPos - i.worldPos);
+                    float3 reflectionDir = reflect(-lightDir, i.normal);
+
                     float3 lightColor = _LightColor0.rgb;
                     float3 albedo = tex2D(_MainTex, i.uv).rgb * _Tint.rgb;
                     float3 diffuse = 
-                        albedo * lightColor * DotClamped(lightDir, i.normal); 
-                    return float4(diffuse, 1); // liught from above test to see how it looks like 
+                        albedo * lightColor * DotClamped(lightDir, i.normal);
+
+                    return DotClamped(viewDir, reflectionDir); // liught from above test to see how it looks like 
                 }
 
             ENDCG

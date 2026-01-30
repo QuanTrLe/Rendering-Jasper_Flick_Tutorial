@@ -10,6 +10,10 @@ Shader "Custom/My First Lighting Shader" {
 
     SubShader {
         Pass {
+            Tags {
+				"LightMode" = "ForwardBase"
+			}
+
             CGPROGRAM
 
                 // set what is our vertex and fragment program
@@ -19,7 +23,7 @@ Shader "Custom/My First Lighting Shader" {
 
                 // the boilerplate code: common vars, funcs, and other things
                 // also make it so you dont have to worry about platform specific stuffs
-                #include "UnityCG.cginc"
+                #include "UnityStandardBRDF.cginc"
 
                 float4 _Tint;
                 sampler2D _MainTex;
@@ -52,7 +56,8 @@ Shader "Custom/My First Lighting Shader" {
                 // SV_TARGET is default shader target, indicating where final color is written to
                 float4 MyFragmentProgram (Interpolators i): SV_TARGET {
                     i.normal = normalize(i.normal);
-                    return float4(i.normal * 0.5 + 0.5, 1); // given a texture sample and uv coord return color
+                    float3 lightDir = _WorldSpaceLightPos0.xyz;
+                    return DotClamped(lightDir, i.normal); // liught from above test to see how it looks like 
                 }
 
             ENDCG

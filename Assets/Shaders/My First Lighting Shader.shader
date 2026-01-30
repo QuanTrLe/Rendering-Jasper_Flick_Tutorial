@@ -21,13 +21,13 @@ Shader "Custom/My First Lighting Shader" {
 
                 // set what is our vertex and fragment program
                 // pragma is basically for issuing special compiler directives
+                #pragma target 3.0 // so that Unity selects the best BRDF functions, at least 3.0
                 #pragma vertex MyVertexProgram
 			    #pragma fragment MyFragmentProgram
 
                 // the boilerplate code: common vars, funcs, and other things
                 // also make it so you dont have to worry about platform specific stuffs
-                #include "UnityStandardBRDF.cginc"
-                #include "UnityStandardUtils.cginc"
+                #include "UnityPBSLighting.cginc"
 
                 float4 _Tint;
                 sampler2D _MainTex;
@@ -66,8 +66,6 @@ Shader "Custom/My First Lighting Shader" {
                     i.normal = normalize(i.normal);
                     float3 lightDir = _WorldSpaceLightPos0.xyz;
                     float3 viewDir = normalize(_WorldSpaceCameraPos - i.worldPos);
-                    //float3 reflectionDir = reflect(-lightDir, i.normal); // phong model
-                    float3 halfVector = normalize(lightDir + viewDir); // blinn - phong model
 
                     float3 lightColor = _LightColor0.rgb;
                     float3 albedo = tex2D(_MainTex, i.uv).rgb * _Tint.rgb;
@@ -80,13 +78,22 @@ Shader "Custom/My First Lighting Shader" {
                         albedo, _Metallic, specularTint, oneMinusReflectivity
                     );
                     
-                    float3 diffuse = 
-                        albedo * lightColor * DotClamped(lightDir, i.normal);
-                    float3 specular = specularTint  * lightColor * pow(
-                        DotClamped(halfVector, i.normal),
-                        _Smoothness * 100
-                    );
-                    return float4(diffuse + specular, 1); // specular with color 
+                    // UnityLight struct that Unity shaders use to pass light data
+                    UnityLight light;
+                    light.color = lightColor;
+                    light.dir = lightDir;
+                    light.ndotl = DotClamped(i.normal, lightDir); // difuse term
+
+                    UnityIndirect indirectLight; // this one for indirect lighting
+                    indirectLight.diffuse = 0; // ambient light
+                    indirectLight.specular = 0; // env reflections
+
+                    return UNITY_BRDF_PBS(
+                        albedo, specularTint,
+                        oneMinusReflectivity, _Smoothness,
+                        i.normal, viewDir,
+                        light, indirectLight
+                    ); // specular with color 
                 }
 
             ENDCG

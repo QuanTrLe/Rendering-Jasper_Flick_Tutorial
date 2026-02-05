@@ -1,3 +1,7 @@
+// guard to prevent redefinition
+#if !defined(MY_LIGHTING_INCLUDED)
+#define MY_LIGHTING_INCLUDED
+
 // the boilerplate code: common vars, funcs, and other things
 // also make it so you dont have to worry about platform specific stuffs
 #include "UnityPBSLighting.cginc"
@@ -68,3 +72,5 @@ float4 MyFragmentProgram (Interpolators i): SV_TARGET {
         light, indirectLight
     ); // specular with color 
 }
+
+#endif

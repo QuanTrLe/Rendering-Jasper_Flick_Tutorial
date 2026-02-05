@@ -25,10 +25,6 @@ Shader "Custom/My First Lighting Shader" {
                 #pragma vertex MyVertexProgram
 			    #pragma fragment MyFragmentProgram
 
-                // guard to prevent redefinition
-                // #if !defined(MY_LIGHTING_INCLUDED)
-                // #define MY_LIGHTING_INCLUDED
-
                 // all the base lighting default we made with Unity's BRDF
                 #include "My Lighting.cginc"
                 

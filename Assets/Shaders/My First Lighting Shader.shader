@@ -25,9 +25,16 @@ Shader "Custom/My First Lighting Shader" {
                 #pragma vertex MyVertexProgram
 			    #pragma fragment MyFragmentProgram
 
+                // guard to prevent redefinition
+                #if !defined(MY_LIGHTING_INCLUDED)
+                #define MY_LIGHTING_INCLUDED
+
                 // the boilerplate code: common vars, funcs, and other things
                 // also make it so you dont have to worry about platform specific stuffs
                 #include "UnityPBSLighting.cginc"
+
+                // all the base lighting default we made with Unity's BRDF
+                #include "My Lighting.cginc"
 
                 float4 _Tint;
                 sampler2D _MainTex;
@@ -97,6 +104,7 @@ Shader "Custom/My First Lighting Shader" {
                 }
 
             ENDCG
+            #endif
         }
     }
 }

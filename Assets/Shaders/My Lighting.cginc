@@ -37,14 +37,22 @@ Interpolators MyVertexProgram (VertexData v){
 }
 
 
+// a general part of handling light, to make sure we can deal with both directional and dot light 
+UnityLight CreateLight (Interpolators i) {
+	UnityLight light;
+	light.dir = _WorldSpaceLightPos0.xyz;
+	light.color = _LightColor0.rgb;
+	light.ndotl = DotClamped(i.normal, light.dir);
+	return light;
+}
+
+
 // output rgba color val for one pixel
 // SV_TARGET is default shader target, indicating where final color is written to
 float4 MyFragmentProgram (Interpolators i): SV_TARGET {
     i.normal = normalize(i.normal);
-    float3 lightDir = _WorldSpaceLightPos0.xyz;
     float3 viewDir = normalize(_WorldSpaceCameraPos - i.worldPos);
 
-    float3 lightColor = _LightColor0.rgb;
     float3 albedo = tex2D(_MainTex, i.uv).rgb * _Tint.rgb;
     float3 specularTint; // if its metal then we have specular tint
 
@@ -54,12 +62,6 @@ float4 MyFragmentProgram (Interpolators i): SV_TARGET {
     albedo = DiffuseAndSpecularFromMetallic( // from the util func
         albedo, _Metallic, specularTint, oneMinusReflectivity
     );
-    
-    // UnityLight struct that Unity shaders use to pass light data
-    UnityLight light;
-    light.color = lightColor;
-    light.dir = lightDir;
-    light.ndotl = DotClamped(i.normal, lightDir); // difuse term
 
     UnityIndirect indirectLight; // this one for indirect lighting
     indirectLight.diffuse = 0; // ambient light
@@ -69,7 +71,7 @@ float4 MyFragmentProgram (Interpolators i): SV_TARGET {
         albedo, specularTint,
         oneMinusReflectivity, _Smoothness,
         i.normal, viewDir,
-        light, indirectLight
+        CreateLight(i), indirectLight
     ); // specular with color 
 }
 

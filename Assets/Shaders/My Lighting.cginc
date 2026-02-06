@@ -40,7 +40,7 @@ Interpolators MyVertexProgram (VertexData v){
 // a general part of handling light, to make sure we can deal with both directional and dot light 
 UnityLight CreateLight (Interpolators i) {
 	UnityLight light;
-	light.dir = _WorldSpaceLightPos0.xyz;
+	light.dir = normalize(_WorldSpaceLightPos0.xyz - i.worldPos);
 	light.color = _LightColor0.rgb;
 	light.ndotl = DotClamped(i.normal, light.dir);
 	return light;

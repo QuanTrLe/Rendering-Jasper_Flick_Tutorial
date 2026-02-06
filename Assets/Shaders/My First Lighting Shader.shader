@@ -35,6 +35,7 @@ Shader "Custom/My First Lighting Shader" {
                 "LightMode" = "ForwardAdd"
             }
             Blend One One // meaning additive blending between old and new pixel data 
+            ZWrite Off // to disable recording depth to the buffer twice, which would be wasteful 
 
             CGPROGRAM
             #pragma target 3.0

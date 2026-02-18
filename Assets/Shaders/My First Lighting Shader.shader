@@ -39,11 +39,13 @@ Shader "Custom/My First Lighting Shader" {
 
             CGPROGRAM
             #pragma target 3.0
+
+            // multiple variants of the shader
+            # pragma multi_compile DIRECTIONAL POINT // for point light specifically
+
             #pragma vertex MyVertexProgram
             #pragma fragment MyFragmentProgram
 
-            #define POINT // define it so the attenuation macro knows what we are dealing with
-            
             #include "My Lighting.cginc"
             ENDCG
         }

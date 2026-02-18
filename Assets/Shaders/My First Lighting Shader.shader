@@ -42,6 +42,8 @@ Shader "Custom/My First Lighting Shader" {
             #pragma vertex MyVertexProgram
             #pragma fragment MyFragmentProgram
 
+            #define POINT // define it so the attenuation macro knows what we are dealing with
+            
             #include "My Lighting.cginc"
             ENDCG
         }

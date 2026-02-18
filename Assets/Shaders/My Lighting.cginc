@@ -4,6 +4,7 @@
 
 // the boilerplate code: common vars, funcs, and other things
 // also make it so you dont have to worry about platform specific stuffs
+#include "AutoLight.cginc"
 #include "UnityPBSLighting.cginc"
 
 float4 _Tint;
@@ -41,8 +42,7 @@ Interpolators MyVertexProgram (VertexData v){
 UnityLight CreateLight (Interpolators i) {
 	UnityLight light;
 	light.dir = normalize(_WorldSpaceLightPos0.xyz - i.worldPos);
-    float3 lightVec = _WorldSpaceLightPos0.xyz - i.worldPos; // to determine how bright is the spot light when its distance far away
-    float attenuation = 1 / (1 + dot (lightVec, lightVec));
+    UNITY_LIGHT_ATTENUATION(attenuation, 0, i.worldPos) // to determine how bright is the spot light when its distance far away
 	light.color = _LightColor0.rgb * attenuation;
 	light.ndotl = DotClamped(i.normal, light.dir);
 	return light;

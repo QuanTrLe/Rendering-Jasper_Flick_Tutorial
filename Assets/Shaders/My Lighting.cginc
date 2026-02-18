@@ -41,7 +41,14 @@ Interpolators MyVertexProgram (VertexData v){
 // a general part of handling light, to make sure we can deal with both directional and dot light 
 UnityLight CreateLight (Interpolators i) {
 	UnityLight light;
-	light.dir = normalize(_WorldSpaceLightPos0.xyz - i.worldPos);
+
+    #if defined(POINT)
+    	light.dir = normalize(_WorldSpaceLightPos0.xyz - i.worldPos);
+    #else
+        light.dir = _WorldSpaceLightPos0.xyz;
+    #endif
+    
+    float3 lightVec = _WorldSpaceLightPos0.xyz - i.worldPos;
     UNITY_LIGHT_ATTENUATION(attenuation, 0, i.worldPos) // to determine how bright is the spot light when its distance far away
 	light.color = _LightColor0.rgb * attenuation;
 	light.ndotl = DotClamped(i.normal, light.dir);
